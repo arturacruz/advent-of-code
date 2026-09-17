@@ -1,18 +1,5 @@
 use advent_of_code_lib::*;
 
-const DIRS: [(isize, isize); 8] = [
-    (0, 1),
-    (0, -1),
-    (-1, 0),
-    (1, 0),
-    (-1, -1),
-    (1, -1),
-    (-1, 1),
-    (1, 1),
-];
-
-const TARGET: [char; 4] = ['X', 'M', 'A', 'S'];
-
 fn main() {
     let input = get_input(InputType::Input);
     let matrix = input
@@ -23,26 +10,18 @@ fn main() {
     let mut count = 0;
     for (y, line) in matrix.iter().enumerate() {
         for (x, c) in line.iter().enumerate() {
-            if *c != TARGET[0] { continue }
+            if *c != 'A' || x == 0 || y == 0 || y == matrix.len() - 1 || x == line.len() - 1 {
+                continue;
+            }
 
-            'dirs: for (i, j) in DIRS {
-                for dist in 1..=3 {
-                    let Some(newy) = y.checked_add_signed(j * dist) else {
-                        continue 'dirs;
-                    };
+            let top_left = matrix[y - 1][x - 1];
+            let top_right = matrix[y - 1][x + 1];
+            let bot_left = matrix[y + 1][x - 1];
+            let bot_right = matrix[y + 1][x + 1];
 
-                    let Some(newx) = x.checked_add_signed(i * dist) else {
-                        continue 'dirs;
-                    };
-
-                    let Some(t) = matrix.get(newy).and_then(|l| l.get(newx)) else {
-                        continue 'dirs;
-                    };
-
-                    if *t != TARGET[dist as usize] {
-                        continue 'dirs
-                    }
-                }
+            if matches!((top_left, bot_right), ('M', 'S') | ('S', 'M'))
+                && matches!((top_right, bot_left), ('M', 'S') | ('S', 'M'))
+            {
                 count += 1;
             }
         }
