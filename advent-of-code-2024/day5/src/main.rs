@@ -30,11 +30,29 @@ fn main() {
                 }
 
                 if forbidden_nums.contains(num) {
-                    return false;
+                    return true;
                 }
             };
 
-            true
+            false
+        })
+        .map(|mut update| {
+            let len = update.len();
+            let mut unsorted = true;
+            while unsorted {
+                unsorted = false;
+                for i in 0..len-1 {
+                    for j in i+1..len {
+                        let n1 = update[i];
+                        let n2 = update[j];
+                        if let Some(set) = rules.get(&n1) && set.contains(&n2) {
+                            update.swap(i, j);
+                            unsorted = true;
+                        }
+                    }
+                }
+            }
+            update
         })
         .map(|u| u[u.len() / 2])
         .sum::<usize>();
