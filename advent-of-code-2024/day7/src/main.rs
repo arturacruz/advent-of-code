@@ -5,14 +5,21 @@ fn backtrack(target_value: &usize, nums: &[usize], current_val: usize) -> bool {
         return current_val == *target_value;
     }
 
+    let new_slice = &nums[1..];
+
     // Addition
     let val = current_val + nums[0];
-    if backtrack(target_value, &nums[1..], val) {
+    if backtrack(target_value, new_slice, val) {
         return true;
     }
 
     let val = current_val * nums[0];
-    backtrack(target_value, &nums[1..], val)
+    if backtrack(target_value, new_slice, val) {
+        return true;
+    }
+
+    let val = (current_val.to_string() + &nums[0].to_string()).parse::<usize>().unwrap();
+    backtrack(target_value, new_slice, val)
 }
 
 fn main() {
