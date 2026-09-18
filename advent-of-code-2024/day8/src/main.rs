@@ -8,24 +8,32 @@ pub fn is_in_bounds(p: Vec2, size: Vec2) -> bool {
     p.0 >= 0 && p.0 < size.0 && p.1 >= 0 && p.1 < size.1
 }
 
-pub fn get_antinodes(p1: Vec2, p2: Vec2, size: Vec2) -> (Option<Vec2>, Option<Vec2>) {
+pub fn get_antinodes(p1: Vec2, p2: Vec2, size: Vec2) -> HashSet<Vec2> {
+    let mut nodes = HashSet::new();
+
     let dist = (p2.0 - p1.0, p2.1 - p1.1);
 
-    let ant1 = (p1.0 - dist.0, p1.1 - dist.1);
-    let ant1 = if is_in_bounds(ant1, size) {
-        Some(ant1)
-    } else {
-        None
-    };
+    let mut i = 1;
+    loop {
+        let ant = (p1.0 - dist.0 * i, p1.1 - dist.1 * i);
+        if !is_in_bounds(ant, size) {
+            break;
+        }
+        nodes.insert(ant);
+        i += 1;
+    }
 
-    let ant2 = (p2.0 + dist.0, p2.1 + dist.1);
-    let ant2 = if is_in_bounds(ant2, size) {
-        Some(ant2)
-    } else {
-        None
-    };
+    i = 1;
+    loop {
+        let ant = (p2.0 + dist.0 * i, p2.1 + dist.1 * i);
+        if !is_in_bounds(ant, size) {
+            break;
+        }
+        nodes.insert(ant);
+        i += 1;
+    }
 
-    (ant1, ant2)
+    nodes
 }
 
 fn main() {
@@ -59,19 +67,15 @@ fn main() {
         let n = freqs.len();
         for i in 0..n - 1 {
             for j in i + 1..n {
-                let (ant1, ant2) = get_antinodes(
+                let nodes = get_antinodes(
                     freqs[i],
                     freqs[j],
                     size
                 );
 
-                if let Some(a) = ant1 {
-                    antinodes.insert(a);
-                }
-
-                if let Some(a) = ant2 {
-                    antinodes.insert(a);
-                }
+                antinodes.insert(freqs[i]);
+                antinodes.insert(freqs[j]);
+                antinodes.extend(nodes);
             }
         }
     } 
