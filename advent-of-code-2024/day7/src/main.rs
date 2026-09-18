@@ -24,10 +24,9 @@ fn main() {
             nums.split_whitespace()
                 .map(|num| num.parse::<usize>().unwrap())
                 .collect::<Vec<_>>()
-        ))
-        .collect::<Vec<_>>();
+        ));
 
-    let count = equations.iter()
+    let count = equations
         .filter(|(val, nums)| backtrack(val, nums, 0))
         .map(|(val, _)| val)
         .sum::<usize>();
