@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use advent_of_code_lib::*;
 
 const RADIX: u32 = 10;
@@ -13,10 +15,11 @@ fn debug_disk(disk: &[Option<usize>]) {
 }
 
 fn main() {
-    let input = get_input(InputType::Input);
+    let input = get_input(InputType::Test);
     let input = input.trim();
     
     let mut disk = vec![];
+    let mut file_sizes = vec![];
 
     // Convert input into disk visualization
     let mut file_id = 0;
@@ -26,6 +29,7 @@ fn main() {
             for _ in 0..c {
                 disk.push(Some(file_id));
             }
+            file_sizes.push((disk.len() - c + 1, c));
             file_id += 1;
         } else {
             for _ in 0..c {
@@ -36,26 +40,15 @@ fn main() {
 
     // Move disk partitions
     let mut i = 0;
-    let mut j = disk.len() - 1;
-    while i < j && i < disk.len() {
-        if disk[i].is_some() {
-            i += 1;
-            continue;
-        }
 
-        if disk[j].is_none() {
-            j -= 1;
-            continue;
-        }
+    while i < disk.len() {
 
-        disk[i] = disk[j];
-        disk[j] = None;
     }
 
     // Calculate checksum
     let checksum = disk.iter()
-        .take_while(|c| c.is_some())
         .enumerate()
+        .filter(|(_i, c)| c.is_some())
         .map(|(i, c)| i * c.unwrap())
         .sum::<usize>();
 
