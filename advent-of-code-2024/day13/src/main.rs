@@ -1,9 +1,24 @@
 use advent_of_code_lib::*;
 
+const OFFSET: usize = 10000000000000;
+
+#[derive(Debug)]
 struct Machine {
     a: (usize, usize),
     b: (usize, usize),
     target: (usize, usize),
+}
+
+fn gcd(a: usize, b: usize) -> usize {
+    let mut n1 = a.max(b);
+    let mut n2 = a.min(b);
+    
+    while n2 != 0 {
+        let temp = n2;
+        n2 = n1 % n2;
+        n1 = temp;
+    }
+    n1
 }
 
 impl Machine {
@@ -24,8 +39,8 @@ impl Machine {
 
         let (x, y) = target.split_once(',').unwrap();
         let target = (
-            x[x.find('=').unwrap() + 1..].parse().unwrap(),
-            y[y.find('=').unwrap() + 1..].parse().unwrap(),
+            x[x.find('=').unwrap() + 1..].parse::<usize>().unwrap() + OFFSET,
+            y[y.find('=').unwrap() + 1..].parse::<usize>().unwrap() + OFFSET,
         );
 
         Self { 
@@ -36,27 +51,20 @@ impl Machine {
     }
 
     pub fn find_fewest_token_solution(&mut self) -> Option<usize> {
-        let mut min_val: Option<usize> = None;
-        for i in 0..=100 {
-            for j in 0..=100 {
-                let x = i * self.a.0 + j * self.b.0;
-                let y = i * self.a.1 + j * self.b.1;
+        let gcd_x = gcd(self.a.0, self.b.0);
+        let gcd_y = gcd(self.a.1, self.b.1);
 
-                let tokens = i * 3 + j;
-                if (x, y) == self.target {
-                    min_val = Some(match min_val {
-                        Some(m) => m.min(tokens),
-                        None => tokens
-                    });
-                }
-            }
+        if !self.target.0.is_multiple_of(gcd_x) || !self.target.1.is_multiple_of(gcd_y) {
+            println!("{:?} has no solution", self);
+            return None;
         }
-        min_val
+
+        Some(0)
     }
 }
 fn main() {
-    let input = get_input(InputType::Input);
-    
+    let input = get_input(InputType::Test);
+
     let tokens = input.lines()
         .filter(|l| !l.is_empty())
         .collect::<Vec<&str>>()
